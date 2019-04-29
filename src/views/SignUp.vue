@@ -1,32 +1,28 @@
 <template>
-  <div class="login">
-    <h3>Sign In</h3>
+  <div class="sign-up">
+    <p>Let's create a new account!</p>
     <input type="text" placeholder="Email">
     <input type="password" placeholder="Password">
-    <button @click="login">Connection</button>
-    <p>
-      You don't have an account? You can create one
-      <router-link to="/sign-up">here</router-link>.
-    </p>
+    <button>Sign Up</button>
+    <span>
+      or go back to
+      <router-link to="login">login</router-link>.
+    </span>
   </div>
 </template>
 
 <script>
 export default {
-  name: "login",
+  name: "signUp",
   data() {
     return {};
   },
-  methods: {
-    login: function() {
-      this.$router.replace("home");
-    }
-  }
+  methods: {}
 };
 </script>
 
 <style lang="scss" scoped>
-.login {
+.sign-up {
   margin-top: 40px;
 }
 
