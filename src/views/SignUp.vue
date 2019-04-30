@@ -1,9 +1,9 @@
 <template>
   <div class="sign-up">
     <p>Let's create a new account!</p>
-    <input type="text" placeholder="Email">
-    <input type="password" placeholder="Password">
-    <button>Sign Up</button>
+    <input type="text" v-model="email" placeholder="Email">
+    <input type="password" v-model="password" placeholder="Password">
+    <button @click="signUp">Sign Up</button>
     <span>
       or go back to
       <router-link to="login">login</router-link>.
@@ -12,12 +12,34 @@
 </template>
 
 <script>
+import firebase from "firebase";
+
 export default {
   name: "signUp",
   data() {
-    return {};
+    return {
+      email: "",
+      password: ""
+    };
   },
-  methods: {}
+  methods: {
+    signUp: function() {
+      // Note from: https://medium.com/@anas.mammeri/vue-2-firebase-how-to-build-a-vue-app-with-firebase-authentication-system-in-15-minutes-fdce6f289c3c
+      // The createUserWithEmailAndPassword function return a Firebase promise, with an onResolve and onReject callback. You can know more about the different type of Firebase promises here: (https://firebase.google.com/docs/reference/js/firebase.Promise).
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.email, this.password)
+        .then(
+          // eslint-disable-next-line
+          user => {
+            this.$router.replace("home");
+          },
+          err => {
+            alert("Oops. " + err.message);
+          }
+        );
+    }
+  }
 };
 </script>
 

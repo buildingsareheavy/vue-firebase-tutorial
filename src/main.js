@@ -16,9 +16,12 @@ export const router = new VueRouter({
   mode: "history",
   routes: [
     {
-      path: "/home",
-      name: "home",
-      component: Home
+      path: "*", // Redirect every paths that does not exist to the Login view.
+      redirect: "/login"
+    },
+    {
+      path: "/",
+      redirect: "/login"
     },
     {
       path: "/login",
@@ -26,11 +29,31 @@ export const router = new VueRouter({
       component: Login
     },
     {
+      path: "/home",
+      name: "home",
+      component: Home,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
       path: "/sign-up",
       name: "SignUp",
       component: SignUp
     }
   ]
+});
+
+// Add Navigation Gaurds
+// Note from: https://router.vuejs.org/guide/advanced/navigation-guards.html#global-before-guards
+// Navigation guards provided by vue-router are primarily used to guard navigations either by redirecting it or canceling it. There are a number of ways to hook into the route navigation process: globally, per-route, or in-component.
+router.beforeEach((to, from, next) => {
+  const currentUser = firebase.auth().currentUser;
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+  if (requiresAuth && !currentUser) next("login");
+  else if (!requiresAuth && currentUser) next("home");
+  else next(); // Else, we proceed navigation.
 });
 
 // Initialize Firebase
@@ -46,7 +69,13 @@ var config = {
 };
 firebase.initializeApp(config);
 
-new Vue({
-  router,
-  render: h => h(App)
-}).$mount("#app");
+let app = "";
+
+firebase.auth().onAuthStateChanged(() => {
+  if (!app) {
+    app = new Vue({
+      router,
+      render: h => h(App)
+    }).$mount("#app");
+  }
+});
